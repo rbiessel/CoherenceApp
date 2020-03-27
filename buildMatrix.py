@@ -68,7 +68,7 @@ def displayArray(array, data=None, filename=None):
     pos = ax1.imshow(array, cmap='coolwarm', interpolation='none', vmin=vmin, vmax=vmax)
 
     print(dates)
-    tickInterval = 2
+    tickInterval = 4
 
 
     x = np.arange(0,len(dates), tickInterval)
@@ -94,40 +94,7 @@ def displayArray(array, data=None, filename=None):
     else:
         plt.show()
 
-
-def createMatrix(stack):
-    dates = corlib.getDates(stack)
-    dateTimes = []
-    
-    for date in dates:
-        date = str(date)
-        date = datetime.datetime.strptime(date, '%Y%m%d')
-        dateTimes.append(date)
-    
-    dimension = len(dateTimes)
-
-    print(f'Creating a matrix of {dimension}x{dimension}')
-
-    covariance = np.zeros(shape=(dimension, dimension))
-
-    for row in range(dimension):
-        for column in range(dimension):
-            master = dates[row]
-            slave = dates[column]
-            if master == slave:
-                covariance[row,column] = None
-            else:
-                covariance[row,column] = corlib.getAverageByCombo(master, slave)
-
-    data = {
-            'title': 'Makushin Coherence Matrix',
-            'dates': dateTimes
-        }
-
-    displayArray(covariance, data=data, filename='./makushinCovariance.png')
-
-
-def padMatrix(stack):
+def buildPaddedMatrix(stack, out_path):
     dates = corlib.getDates(stack)
     dateTimes = []
 
@@ -137,8 +104,6 @@ def padMatrix(stack):
         dateTimes.append(date)
 
     paddedDates = dateTimes
-
-    print('padding matrix')
     x = 0
     while x < len(paddedDates):
         date = paddedDates[x]
@@ -150,12 +115,6 @@ def padMatrix(stack):
                 paddedDates.insert(x, nextDate)
         else:
             break
-
-    # dates = []
-    # for date in paddedDates:
-    #     date = now.strftime('%Y%m%d')
-    #     dates.append(date)
-
     dimension = len(paddedDates)
 
     print(f'Creating a matrix of {dimension}x{dimension}')
@@ -177,13 +136,12 @@ def padMatrix(stack):
                         covariance[row,column] = pixelVal
                         covariance[column,row] = pixelVal
 
-
     data = {
-        'title': 'Makushin Coherence Matrix',
+        'title': 'Coherence Matrix of Cleveland Volcano and Adjacent Islands',
         'dates': paddedDates
     }
 
-    displayArray(covariance, data=data, filename='./makushinCovariance.png')
+    displayArray(covariance, data=data, filename=out_path)
 
 def getAverageByCombo(master, slave):
     path = f'./interferograms/{master}_{slave}/geo_filt_fine.cor'
@@ -194,8 +152,7 @@ def main():
     corGlobPath = './interferograms/**/geo_filt_fine.cor'
     inps = cmdLineParse()
     stack = glob.glob(inps.cor_dir)
-    createMatrix(stack)
-    padMatrix(stack)
+    buildPaddedMatrix(stack, inps.out_path)
     
 
 if __name__ == '__main__':

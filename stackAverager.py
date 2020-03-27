@@ -178,7 +178,7 @@ def getMeanByBaseline(baseline, stack):
     npStack = buildBigStack(stack)
     return np.mean(npStack, axis=0), len(stack)
 
-def createMeanPngs(stack):
+def createMeanPngs(corPaths):
     print('Baseline: ')
     print(getBaseline(corPaths[0]))
     baselines = getBaselineList(corPaths)
@@ -219,58 +219,19 @@ def getDates(stack):
             datelist.append(date2)
     return sorted(datelist)
 
-def createMatrix(stack):
-    dates = getDates(stack)
-    dateTimes = []
-    
-    for date in dates:
-        date = str(date)
-        date = datetime.datetime.strptime(date, '%Y%m%d')
-        dateTimes.append(date)
-    
-    dimension = len(dateTimes)
 
-    print(f'Creating a matrix of {dimension}x{dimension}')
-
-    covariance = np.zeros(shape=(dimension, dimension))
-
-    for row in range(dimension):
-        for column in range(dimension):
-            master = dates[row]
-            slave = dates[column]
-            if master == slave:
-                covariance[row,column] = None
-            else:
-                covariance[row,column] = getAverageByCombo(master, slave)
-
-    print(covariance)
-
-    data = {
-            'title': 'Makushin Coherence Matrix',
-            'dates': dates
-        }
-
-    displayArray(covariance, data=data, filename='./makushinCovariance.png')
-
-
-def getAverageByCombo(master, slave):
-    path = f'./interferograms/{master}_{slave}/geo_filt_fine.cor'
-    print(path)
-    return getAverage(path)
 
 
 def main():
     outname = './geocoded_average.cor'
     corGlobPath = './interferograms/**/geo_filt_fine.cor'
     stack = glob.glob(corGlobPath)
-
+    createMeanPngs(stack)
     # averagedStack = buildAverage(corPaths)
     # displayArray(averagedStack)
     # Get geo info from stack raster
 
     
-    createMatrix(stack)
-
 if __name__ == '__main__':
     main()
     # secondMain()

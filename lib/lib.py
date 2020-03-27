@@ -209,8 +209,12 @@ def createMeanPngs(stack):
 
 def getDates(stack):
     datelist = []
+    
+
     for interferogram in stack:
-        dates = interferogram.split('/')[2].split('_')
+        dates = interferogram.split('/')
+        dates = dates[len(dates) - 2].split('_')
+        print(dates)
         date1 = int(dates[0])
         date2 = int(dates[1])
         if date1 not in datelist:
