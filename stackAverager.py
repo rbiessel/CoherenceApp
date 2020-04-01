@@ -8,6 +8,7 @@ import osr
 import datetime
 from dateutil.parser import parse
 import matplotlib.dates as mdates
+import sys
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
@@ -82,23 +83,26 @@ def displayArray(array, data=None, filename=None):
                 'fontname': 'arial',
                 'color': 'black',
                 'weight': 'heavy',
-                'size': 8,
+                'size': 12,
                 }
 
-    fig, (ax1) = plt.subplots(figsize=(5, 4), ncols=1)
+    fig, (ax1) = plt.subplots(figsize=(8, 6), ncols=1)
     pos = ax1.imshow(array, cmap='coolwarm', interpolation='none', vmin=vmin, vmax=vmax)
 
+    divider = make_axes_locatable(ax1)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+
     if title is not None:
-        plt.title(title, fontsize=12, fontdict=font)
+        ax1.set_title(title, fontdict=font, pad=16)
     if text is not None:
-        plt.text(700,500, text, fontsize=10, fontdict=font)
+        ax1.text(25,450, text, fontsize=(font['size'] - 2), fontdict=font)
    
     plt.subplots_adjust(left=0.25)
-    fig.colorbar(pos, ax=ax1)
+    fig.colorbar(pos, cax=cax)
     plt.tight_layout()
     
     if filename is not None:
-        plt.savefig(filename)
+        plt.savefig(filename, bbox_inches='tight')
     else:
         plt.show()
 
@@ -194,10 +198,10 @@ def createMeanPngs(corPaths):
         print(f'Min: {meanMin} Max: {meanMax}')
         # # std = np.std(npStack, axis=0)
         baseline = str(baseline).zfill(3)
-        # arrayToTif(corPaths[0], mean, f'output/avg_cor_{baseline}_days.tif')
+        arrayToTif(corPaths[0], mean, f'./meanByTempBaseline/avg_cor_{baseline}_days.tif')
 
         data = {
-            'title': 'Makushin Volcano and Unalaska Coherence Mean',
+            'title': 'Northwestern Unalaska Coherence Mean',
             'baseline': baseline,
             'count': count,
             'min': 0,
@@ -218,8 +222,6 @@ def getDates(stack):
         if date2 not in datelist:
             datelist.append(date2)
     return sorted(datelist)
-
-
 
 
 def main():

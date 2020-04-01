@@ -68,7 +68,7 @@ def displayArray(array, data=None, filename=None):
     pos = ax1.imshow(array, cmap='coolwarm', interpolation='none', vmin=vmin, vmax=vmax)
 
     print(dates)
-    tickInterval = 4
+    tickInterval = 2
 
 
     x = np.arange(0,len(dates), tickInterval)
@@ -137,7 +137,7 @@ def buildPaddedMatrix(stack, out_path):
                         covariance[column,row] = pixelVal
 
     data = {
-        'title': 'Coherence Matrix of Cleveland Volcano and Adjacent Islands',
+        'title': 'Coherence Matrix of Northwestern Unalaska',
         'dates': paddedDates
     }
 
@@ -153,7 +153,6 @@ def main():
     inps = cmdLineParse()
     stack = glob.glob(inps.cor_dir)
     buildPaddedMatrix(stack, inps.out_path)
-    
 
 if __name__ == '__main__':
     main()
