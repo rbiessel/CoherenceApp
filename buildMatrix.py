@@ -119,32 +119,32 @@ def buildPaddedMatrix(stack, out_path):
 
     print(f'Creating a matrix of {dimension}x{dimension}')
 
-    covariance = np.zeros(shape=(dimension, dimension))
+    coherence = np.zeros(shape=(dimension, dimension))
     for row in range(dimension):
         for column in range(dimension):
-            master = paddedDates[row]
-            slave = paddedDates[column]
-            if master in dateTimes and slave in dateTimes:
-                if master == slave:
-                    covariance[row,column] = None
+            ref = paddedDates[row]
+            sec = paddedDates[column]
+            if ref in dateTimes and sec in dateTimes:
+                if ref == sec:
+                    coherence[row,column] = None
                 else:
-                    master = master.strftime('%Y%m%d')
-                    slave = slave.strftime('%Y%m%d')
-                    pixelVal = corlib.getAverageByCombo(slave, master)
-                    covariance[row,column] = pixelVal
+                    ref = ref.strftime('%Y%m%d')
+                    sec = sec.strftime('%Y%m%d')
+                    pixelVal = corlib.getAverageByCombo(sec, ref)
+                    coherence[row,column] = pixelVal
                     if pixelVal is not None: 
-                        covariance[row,column] = pixelVal
-                        covariance[column,row] = pixelVal
+                        coherence[row,column] = pixelVal
+                        coherence[column,row] = pixelVal
 
     data = {
         'title': 'Coherence Matrix of Northwestern Unalaska',
         'dates': paddedDates
     }
 
-    displayArray(covariance, data=data, filename=out_path)
+    displayArray(coherence, data=data, filename=out_path)
 
-def getAverageByCombo(master, slave):
-    path = f'./interferograms/{master}_{slave}/geo_filt_fine.cor'
+def getAverageByCombo(ref, sec):
+    path = f'./interferograms/{ref}_{sec}/geo_filt_fine.cor'
     print(path)
     return getAverage(path)
 
